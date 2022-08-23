@@ -18,6 +18,7 @@
         <module>tested-app</module>
         <module>profiler-solution</module>
         <module>profiler</module>
+        <module>ewall</module>
     </modules>
 
 </project>
