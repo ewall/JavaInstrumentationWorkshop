@@ -41,13 +41,14 @@ public class LogTransformer implements ClassFileTransformer
             }
 
             // Add code to the beginning of a method
-            StringBuilder startBlock = new StringBuilder();
+//            StringBuilder startBlock = new StringBuilder();
 //            method.addLocalVariable("startTime", CtClass.longType);
 //            startBlock.append("startTime = System.currentTimeMillis();");
-            method.addLocalVariable("stats", cp.get("irach.demo.profiler.Stats"));
-            startBlock.append("stats = irach.demo.profiler.Stats.getInstance();");
-            startBlock.append("stats.incCounter();");
-            method.insertBefore(startBlock.toString());
+//            method.addLocalVariable("stats", cp.get("irach.demo.profiler.Stats"));
+//            startBlock.append("stats = irach.demo.profiler.Stats.getInstance();");
+//            startBlock.append("stats.incCounter();");
+//            method.insertBefore(startBlock.toString());
+            method.insertBefore("System.out.println(\"[Log] \" + $2);");
 
             // Add code to the end of a method
 //            StringBuilder endBlock = new StringBuilder();
@@ -64,6 +65,7 @@ public class LogTransformer implements ClassFileTransformer
         catch (Exception e)
         {
             System.out.println("Exception during retransform: " + e.getMessage());
+            System.out.println(e.getStackTrace());
         }
 
         return byteCode;
