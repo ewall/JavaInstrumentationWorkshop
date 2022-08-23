@@ -32,7 +32,8 @@ public class LogTransformer implements ClassFileTransformer
         {
             ClassPool cp = ClassPool.getDefault();
             CtClass cc = cp.get(CLASS_TO_INSTRUMENT);
-            CtMethod method = cc.getDeclaredMethod(TRANSFORM_METHOD);
+            CtClass[] paramTypes = new CtClass[] { cp.get("java.util.logging.Level"), cp.get("java.lang.String") };
+            CtMethod method = cc.getDeclaredMethod(TRANSFORM_METHOD, paramTypes);
 
             if (method == null)
             {
@@ -40,17 +41,22 @@ public class LogTransformer implements ClassFileTransformer
             }
 
             // Add code to the beginning of a method
-            method.addLocalVariable("startTime", CtClass.longType);
-            method.insertBefore( "startTime = System.currentTimeMillis();");
+            StringBuilder startBlock = new StringBuilder();
+//            method.addLocalVariable("startTime", CtClass.longType);
+//            startBlock.append("startTime = System.currentTimeMillis();");
+            method.addLocalVariable("stats", cp.get("irach.demo.profiler.Stats"));
+            startBlock.append("stats = irach.demo.profiler.Stats.getInstance();");
+            startBlock.append("stats.incCounter();");
+            method.insertBefore(startBlock.toString());
 
             // Add code to the end of a method
-            StringBuilder endBlock = new StringBuilder();
-            method.addLocalVariable("endTime", CtClass.longType);
-            method.addLocalVariable("opTime", CtClass.longType);
-            endBlock.append("endTime = System.currentTimeMillis();");
-            endBlock.append("opTime = endTime - startTime;");
-            endBlock.append("System.out.println(\"[Added by Agent] operation time: \" + opTime + \" miliseconds!\");");
-            method.insertAfter(endBlock.toString());
+//            StringBuilder endBlock = new StringBuilder();
+//            method.addLocalVariable("endTime", CtClass.longType);
+//            method.addLocalVariable("opTime", CtClass.longType);
+//            endBlock.append("endTime = System.currentTimeMillis();");
+//            endBlock.append("opTime = endTime - startTime;");
+//            endBlock.append("System.out.println(\"[Added by Agent] operation time: \" + opTime + \" milliseconds!\");");
+//            method.insertAfter(endBlock.toString());
 
             byteCode = cc.toBytecode();
             cc.detach();
